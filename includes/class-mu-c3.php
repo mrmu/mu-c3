@@ -164,6 +164,8 @@ class Mu_C3 {
 		$this->loader->add_action( 'init', $plugin_cpt, 'reg' );
 		$this->loader->add_action( 'save_post_c3_chart', $plugin_cpt, 'save_post_meta', 10, 2 );
 		$this->loader->add_action( 'admin_menu', $plugin_cpt, 'add_metaboxes' );
+		$this->loader->add_filter( 'manage_c3_chart_posts_columns', $plugin_cpt, 'set_custom_edit_c3_chart_columns' );
+		$this->loader->add_action( 'manage_c3_chart_posts_custom_column', $plugin_cpt, 'custom_c3_chart_column', 10, 2 );
 	}
 
 	/**

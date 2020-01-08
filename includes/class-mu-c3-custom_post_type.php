@@ -400,4 +400,27 @@ class Mu_C3_Custom_Post_Type {
         }
         return $post_id;
     }
+
+    public function set_custom_edit_c3_chart_columns($columns) {
+        $columns['shortcode'] = __( 'Shortcode', $this->plugin_name );    
+
+        $n_columns = array();
+        $move = 'shortcode'; // what to move
+        $before = 'date'; // move before this
+        foreach ($columns as $key => $value) {
+            if ($key == $before){
+                $n_columns[$move] = $move;
+            }
+                $n_columns[$key] = $value;
+        }
+        return $n_columns;
+    }
+    
+    public function custom_c3_chart_column( $column, $post_id ) {
+        switch ( $column ) {
+            case 'shortcode' :
+                echo '<strong>[muc3 chart='.$post_id.']</strong>';
+                break;
+        }
+    }
 }
