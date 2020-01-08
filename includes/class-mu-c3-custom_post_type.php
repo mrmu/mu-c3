@@ -86,14 +86,14 @@ class Mu_C3_Custom_Post_Type {
      
         $html = '';
         if (!empty($atts['chart'])) {
-            $the_slug = $atts['chart'];
-            $args = array(
-                'name'        => $the_slug,
-                'post_type'   => 'c3_chart',
-                'numberposts' => 1
-            );
-            $the_post = get_posts($args);
-            $post_id = $the_post[0]->ID;
+            $post_id = absint($atts['chart']);
+            // $args = array(
+            //     'name'        => $the_slug,
+            //     'post_type'   => 'c3_chart',
+            //     'numberposts' => 1
+            // );
+            // $the_post = get_posts($args);
+            // $post_id = $the_post[0]->ID;
             $_c3d_data_x = get_post_meta($post_id, '_c3d_data_x', true);
             $_c3d_data_columns =   get_post_meta($post_id, '_c3d_data_columns', true);
             $_c3d_grid_x_lines =   get_post_meta($post_id, '_c3d_grid_x_lines', true);
@@ -160,8 +160,7 @@ class Mu_C3_Custom_Post_Type {
                     });
                 });
             ";
-            $script = $this->minify_js($script);
-            $html .= '<script>'.$script.'</script>';
+            wp_add_inline_script( 'c3-js', $this->minify_js($script) );
         }
         // $results = ob_get_clean();
         return $html;
@@ -293,7 +292,7 @@ class Mu_C3_Custom_Post_Type {
 	public function add_metaboxes() {
 		add_meta_box(
 			'data_metabox', // metabox ID, it also will be the HTML id attribute
-			__('Data', $this->plugin_name), // title
+			__('Settings', $this->plugin_name), // title
 			array($this, 'data_ui_func'), // this is a callback function, which will print HTML of our metabox
 			'c3_chart', // post type or post types in array
 			'normal', // position on the screen where metabox should be displayed (normal, side, advanced)
@@ -311,8 +310,10 @@ class Mu_C3_Custom_Post_Type {
         $_c3d_axis_codes = get_post_meta($post_id, '_c3d_axis_codes', true);
 
         $html = '';
-		$html .= '<label>'.__('Key of X:', $this->plugin_name).'</label> <input type="text" name="_c3d_data_x" value="'.$_c3d_data_x.'"> <br>';
-        $html .= '<label>'.__('Columns:', $this->plugin_name).'</label>';
+        $html .= '<h3>'.__('Key of X:', $this->plugin_name).'</h3>';
+        $html .= '<input type="text" name="_c3d_data_x" value="'.$_c3d_data_x.'"> <br>';
+
+        $html .= '<h3>'.__('Columns:', $this->plugin_name).'</h3>';
         $html .= '   <div class="data_columns_wrap">';
         $html .= '       <div><a class="add_data_columns_button button-secondary">＋</a></div>';
         if(isset($_c3d_data_columns) && is_array($_c3d_data_columns)) {
@@ -326,7 +327,7 @@ class Mu_C3_Custom_Post_Type {
         }
         $html .= '    </div>'; // data_columns_wrap
 
-        $html .= '<label>'.__('Grid X lines', $this->plugin_name).'</label>';
+        $html .= '<h3>'.__('Grid X lines', $this->plugin_name).'</h3>';
         $html .= '   <div class="grid_x_lines_wrap">';
         $html .= '       <div><a class="add_grid_x_lines_button button-secondary">＋</a></div>';
         if(isset($_c3d_grid_x_lines) && is_array($_c3d_grid_x_lines)) {
@@ -338,7 +339,7 @@ class Mu_C3_Custom_Post_Type {
         }
         $html .= '    </div>'; // grid_x_lines_wrap
 
-        $html .= '<label>'.__('Grid Y lines', $this->plugin_name).'</label>';
+        $html .= '<h3>'.__('Grid Y lines', $this->plugin_name).'</h3>';
         $html .= '   <div class="grid_y_lines_wrap">';
         $html .= '       <div><a class="add_grid_y_lines_button button-secondary">＋</a></div>';
         if(isset($_c3d_grid_y_lines) && is_array($_c3d_grid_y_lines)) {
@@ -350,17 +351,17 @@ class Mu_C3_Custom_Post_Type {
         }
         $html .= '    </div>'; // grid_y_lines_wrap
 
-        $html .= '<label>'.__('Axis codes', $this->plugin_name).'</label>';
+        $html .= '<h3>'.__('Axis codes', $this->plugin_name).'</h3>';
         $html .= '<textarea name="_c3d_axis_codes" rows="8" style="width:100%;">'.$_c3d_axis_codes.'</textarea>';
 
-        $html .= '<label>'.__('Preview', $this->plugin_name).'</label>';
+        $html .= '<h3>'.__('Preview', $this->plugin_name).'</h3>';
         if ($post->post_status == 'publish' ) {
             $html .= '<div>';
-            $html .= do_shortcode('[muc3 chart='.$post->post_name.']');
+            $html .= do_shortcode('[muc3 chart='.$post_id.']');
             $html .= '</div>'; 
         }
-        $html .= '<label>'.__('Shortcode', $this->plugin_name).'</label>';
-        $html .= '<div>[muc3 chart='.$post->post_name.']</div>';
+        $html .= '<h3>'.__('Shortcode', $this->plugin_name).'</h3>';
+        $html .= '<div><strong>[muc3 chart='.$post_id.']</strong></div>';
 		echo $html;
     }
     
